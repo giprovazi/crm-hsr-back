@@ -1,0 +1,100 @@
+package br.com.hsaorafael.crm.funcionario;
+
+import br.com.hsaorafael.crm.common.enums.Setor;
+import br.com.hsaorafael.crm.common.exceptions.BusinessException;
+import br.com.hsaorafael.crm.common.utils.PasswordGenerator;
+import br.com.hsaorafael.crm.funcionario.dto.FuncionarioCreateRequestDTO;
+import br.com.hsaorafael.crm.funcionario.dto.FuncionarioResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+
+@Service
+public class FuncionarioService {
+    private final FuncionarioRepository funcionarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public FuncionarioService(FuncionarioRepository funcionarioRepository) {
+        this.funcionarioRepository = funcionarioRepository;
+    }
+
+    public FuncionarioResponseDTO dtoConverte(Funcionario funcionario) {
+        return new FuncionarioResponseDTO(funcionario.getId(), funcionario.getNome(), funcionario.getEmail(), funcionario.getDataCriacao(), funcionario.getSetor(), funcionario.getAtivo());
+    }
+
+    public FuncionarioResponseDTO cadastroFuncionario(FuncionarioCreateRequestDTO funcionario) {
+        if (funcionarioRepository.existsByEmail(funcionario.email())){
+            throw new BusinessException("Email já cadastrado.");
+        }
+
+        String senhaTemporaria = PasswordGenerator.gerarSenha();
+
+        String senhaCriptografada = passwordEncoder.encode(senhaTemporaria);
+
+        Funcionario funcionarioCriado = new Funcionario();
+        funcionarioCriado.setNome(funcionario.nome());
+        funcionarioCriado.setEmail(funcionario.email());
+        funcionarioCriado.setSenha(senhaCriptografada);
+        funcionarioCriado.setSetor(funcionario.setor());
+        funcionarioCriado.setDataNascimento(funcionario.dataNascimento());
+        funcionarioCriado.setDataCriacao(LocalDateTime.now());
+        funcionarioCriado.setAtivo(true);
+        System.out.println("Senha temporária do funcionário "
+                + funcionarioCriado.getEmail()
+                + ": " + senhaTemporaria);
+
+
+        funcionarioRepository.save(funcionarioCriado);
+
+        return dtoConverte(funcionarioCriado);
+    }
+
+    public List<FuncionarioResponseDTO> listarTodosFuncionarios() {
+        List<Funcionario> funcionarios = funcionarioRepository.findAll();
+        return funcionarios.stream().map(this::dtoConverte).toList();
+    }
+
+    public FuncionarioResponseDTO buscarPorId(Long id) {
+        Funcionario funcionario = funcionarioRepository.findById(id).orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+        return dtoConverte(funcionario);
+    }
+
+    public void desativarFuncionario(Long id) {
+        Funcionario funcionario = funcionarioRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+
+        if (!funcionario.getAtivo()){
+            throw new BusinessException("Funcionário já está desativado.");
+        }
+
+        funcionario.setAtivo(false);
+
+        funcionarioRepository.save(funcionario);
+    }
+
+    public void ativarFuncionario(Long id) {
+        Funcionario funcionario = funcionarioRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+
+        if (funcionario.getAtivo()){
+            throw new BusinessException("Funcionário já está ativado.");
+        }
+
+        funcionario.setAtivo(true);
+
+        funcionarioRepository.save(funcionario);
+    }
+
+    public List<FuncionarioResponseDTO> listarTodosFuncionariosPorSetor(Setor setor) {
+        List<Funcionario> funcionarios = funcionarioRepository.findBySetor(setor);
+        return funcionarios.stream().map(this::dtoConverte).toList();
+    }
+}
