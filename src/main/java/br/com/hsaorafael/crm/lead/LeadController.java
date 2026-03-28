@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
+
 @RestController
 @RequestMapping("/api/leads")
 public class LeadController {
@@ -28,28 +28,45 @@ public class LeadController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<List<LeadResponseDTO>> listarTodosLeads(){
         return ResponseEntity.ok(leadService.listarTodosLeads());
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
+    @GetMapping("/funcionario/{id}")
+    public ResponseEntity<List<LeadResponseDTO>> listarTodosLeadsPorFuncionario(@PathVariable Long id){
+        return ResponseEntity.ok(leadService.listarTodosLeadsPorFuncionario(id));
+    }
+
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
+    @GetMapping("/funcionario/{idFunc}/{idLead}")
+    public ResponseEntity<LeadResponseDTO> buscarLeadsPorIdPorFuncionario(@PathVariable Long idFunc, @PathVariable Long idLead){
+        return ResponseEntity.ok(leadService.listarLeadsPorIdPorFuncionario(idFunc, idLead));
+    }
+
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<LeadResponseDTO> buscarLeadPorId(@PathVariable Long id){
         return ResponseEntity.ok(leadService.buscarLeadPorId(id));
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @PatchMapping("/{id}/assumir")
     public ResponseEntity<Void> assumirLead(@PathVariable Long id){
         leadService.assumirLead(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Void> atualizarLead(@PathVariable Long id, @RequestBody LeadUpdateRequestDTO leadUpdateRequestDTO){
         leadService.atualizarLead(id, leadUpdateRequestDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @PatchMapping("/{id}/contato")
     public ResponseEntity<Void> registrarContato(@PathVariable Long id, @RequestBody LeadContactRequestDTO leadContactRequestDTO){
         leadService.registrarContato(id, leadContactRequestDTO);
@@ -62,16 +79,19 @@ public class LeadController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/hoje")
     public ResponseEntity<List<LeadResponseDTO>> listarLeadsCriadosHoje(){
         return ResponseEntity.ok(leadService.listarLeadsCriadosHoje());
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/ativos/count")
     public ResponseEntity<Integer> contarLeadsAtivos(){
         return ResponseEntity.ok(leadService.contarLeadsAtivos());
     }
 
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @PatchMapping("/{id}/desativar")
     public ResponseEntity<Void> desativarLead(@PathVariable Long id){
         leadService.desativarLead(id);

@@ -3,9 +3,8 @@ package br.com.hsaorafael.crm.common.enums;
 public enum LeadStatus {
     NOVO,
     EM_ATENDIMENTO,
-    AGENDADO_AVALIACAO,
-    CONVERTIDO,
+    CONSULTA_AGENDADA,
+    CONSULTA_CONFIRMADA,
     PERDIDO,
-    SEM_RESPOSTA,
     ENCAMINHADO_VENDAS
 }

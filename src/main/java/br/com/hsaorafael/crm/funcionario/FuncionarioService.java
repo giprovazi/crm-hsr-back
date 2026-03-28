@@ -94,7 +94,7 @@ public class FuncionarioService {
     }
 
     public List<FuncionarioResponseDTO> listarTodosFuncionariosPorSetor(Setor setor) {
-        List<Funcionario> funcionarios = funcionarioRepository.findBySetor(setor);
+        List<Funcionario> funcionarios = funcionarioRepository.findBySetorAndAtivoTrueOrderByIdAsc(setor);
         return funcionarios.stream().map(this::dtoConverte).toList();
     }
 }

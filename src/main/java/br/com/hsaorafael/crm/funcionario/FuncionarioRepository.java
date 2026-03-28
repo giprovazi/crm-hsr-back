@@ -12,5 +12,6 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
 
     boolean existsByEmail(String email);
 
-    List<Funcionario> findBySetor(Setor setor);
+    List<Funcionario> findBySetorAndAtivoTrueOrderByIdAsc(Setor setor);
+
 }

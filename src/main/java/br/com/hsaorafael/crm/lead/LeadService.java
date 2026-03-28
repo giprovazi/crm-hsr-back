@@ -2,11 +2,13 @@ package br.com.hsaorafael.crm.lead;
 
 import br.com.hsaorafael.crm.common.enums.LeadStatus;
 import br.com.hsaorafael.crm.common.exceptions.BusinessException;
+import br.com.hsaorafael.crm.distribuicaoLeads.DistribuicaoLeadsService;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
 import br.com.hsaorafael.crm.lead.dto.LeadContactRequestDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadCreateRequestDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadUpdateRequestDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadResponseDTO;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,17 +16,21 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LeadService {
     private final LeadRepository leadRepository;
+    private final DistribuicaoLeadsService distribuicaoLeadService;
 
-    public LeadService(LeadRepository leadRepository) {
+    public LeadService(LeadRepository leadRepository, DistribuicaoLeadsService distribuicaoLeadService) {
         this.leadRepository = leadRepository;
+        this.distribuicaoLeadService = distribuicaoLeadService;
     }
 
 
     public LeadResponseDTO cadastroLead(LeadCreateRequestDTO leadRequestDTO){
+        Funcionario responsavel = distribuicaoLeadService.distribuir();
         Lead lead = new Lead();
         lead.setNome(leadRequestDTO.nome());
         lead.setTelefone(leadRequestDTO.telefone());
@@ -36,7 +42,7 @@ public class LeadService {
         lead.setStatus(LeadStatus.NOVO);
         lead.setDataCriacao(LocalDateTime.now());
         lead.setAtivo(true);
-        lead.setResponsavel(null);
+        lead.setResponsavel(responsavel);
         lead.setDataUltimoContato(null);
 
         leadRepository.save(lead);
@@ -65,7 +71,7 @@ public class LeadService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Funcionario funcionario = (Funcionario) authentication.getPrincipal();
         lead.setResponsavel(funcionario);
-        lead.setStatus(LeadStatus.EM_ATENDIMENTO);
+        lead.setStatus(LeadStatus.NOVO);
         lead.setDataUltimoContato(LocalDateTime.now());
         leadRepository.save(lead);
     }
@@ -117,5 +123,16 @@ public class LeadService {
         lead.setResponsavel(null);
         lead.setDataUltimoContato(LocalDateTime.now());
         lead.setStatus(LeadStatus.PERDIDO);
+    }
+
+    public List<LeadResponseDTO> listarTodosLeadsPorFuncionario(Long id) {
+        return leadRepository.findByResponsavelId(id)
+                .stream()
+                .map(LeadResponseDTO::fromEntity)
+                .toList();
+    }
+
+    public LeadResponseDTO listarLeadsPorIdPorFuncionario(Long idFunc, Long idLead) {
+        return LeadResponseDTO.fromEntity(leadRepository.findByResponsavelIdAndId(idFunc, idLead).orElseThrow(() -> new BusinessException("Lead não encontrado.")));
     }
 }
