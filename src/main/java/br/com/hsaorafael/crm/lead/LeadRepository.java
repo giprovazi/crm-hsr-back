@@ -15,4 +15,6 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
     List<Lead> findByResponsavelId(Long id);
 
     Optional<Lead> findByResponsavelIdAndId(Long idFunc, Long idLead);
+
+    Integer countByAtivoTrue();
 }

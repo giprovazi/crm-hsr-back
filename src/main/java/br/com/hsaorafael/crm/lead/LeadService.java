@@ -2,6 +2,7 @@ package br.com.hsaorafael.crm.lead;
 
 import br.com.hsaorafael.crm.common.enums.LeadStatus;
 import br.com.hsaorafael.crm.common.exceptions.BusinessException;
+import br.com.hsaorafael.crm.common.exceptions.LeadNotFoundException;
 import br.com.hsaorafael.crm.distribuicaoLeads.DistribuicaoLeadsService;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
 import br.com.hsaorafael.crm.lead.dto.LeadContactRequestDTO;
@@ -58,14 +59,18 @@ public class LeadService {
     }
 
     public LeadResponseDTO buscarLeadPorId(Long id){
-        return LeadResponseDTO.fromEntity(leadRepository.findById(id).orElseThrow(() -> new BusinessException("Lead não encontrado.")));
+        return LeadResponseDTO.fromEntity(leadRepository.findById(id).orElseThrow(() -> new LeadNotFoundException(id)));
     }
 
     public void assumirLead(Long id){
-        Lead lead = leadRepository.findById(id).orElseThrow(() -> new BusinessException("Lead não encontrado."));
+        Lead lead = leadRepository.findById(id).orElseThrow(() -> new LeadNotFoundException(id));
 
         if (lead.getResponsavel() != null){
             throw new BusinessException("Lead já tem responsável.");
+        }
+
+        if (!lead.getAtivo()) {
+            throw new BusinessException("Lead está inativo.");
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +82,10 @@ public class LeadService {
     }
 
     public void atualizarLead(Long id, LeadUpdateRequestDTO lead){
-        Lead leadAntigo = leadRepository.findById(id).orElseThrow(() -> new BusinessException("Lead não encontrado."));
+        Lead leadAntigo = leadRepository.findById(id).orElseThrow(() -> new LeadNotFoundException(id));
+        if (!leadAntigo.getAtivo()) {
+            throw new BusinessException("Não é possível atualizar um lead inativo.");
+        }
         leadAntigo.setNome(lead.nome());
         leadAntigo.setTelefone(lead.telefone());
         leadAntigo.setEmail(lead.email());
@@ -88,17 +96,21 @@ public class LeadService {
     }
 
     public void registrarContato(Long id, LeadContactRequestDTO leadContact){
-        Lead lead = leadRepository.findById(id).orElseThrow(()-> new BusinessException("Lead não encontrado."));
+        Lead lead = leadRepository.findById(id).orElseThrow(()-> new LeadNotFoundException(id));
+        if (!lead.getAtivo()) {
+            throw new BusinessException("Não é possível registrar contato em lead inativo.");
+        }
         lead.setObservacoes(leadContact.observacoes());
         lead.setDataUltimoContato(LocalDateTime.now());
         leadRepository.save(lead);
     }
 
     public void encaminharLead(Long id){
-        Lead lead = leadRepository.findById(id).orElseThrow(()-> new BusinessException("Lead não encontrado."));
+        Lead lead = leadRepository.findById(id).orElseThrow(()-> new LeadNotFoundException(id));
         lead.setStatus(LeadStatus.ENCAMINHADO_VENDAS);
         lead.setResponsavel(null);
         lead.setDataUltimoContato(LocalDateTime.now());
+        leadRepository.save(lead);
     }
 
     public List<LeadResponseDTO> listarLeadsCriadosHoje(){
@@ -114,15 +126,16 @@ public class LeadService {
     }
 
     public Integer contarLeadsAtivos(){
-        return leadRepository.findByAtivoTrue().toArray().length;
+        return leadRepository.countByAtivoTrue();
     }
 
     public void desativarLead(Long id){
-        Lead lead = leadRepository.findById(id).orElseThrow(()-> new BusinessException("Lead não encontrado."));
+        Lead lead = leadRepository.findById(id).orElseThrow(()-> new LeadNotFoundException(id));
         lead.setAtivo(false);
         lead.setResponsavel(null);
         lead.setDataUltimoContato(LocalDateTime.now());
         lead.setStatus(LeadStatus.PERDIDO);
+        leadRepository.save(lead);
     }
 
     public List<LeadResponseDTO> listarTodosLeadsPorFuncionario(Long id) {
@@ -132,7 +145,7 @@ public class LeadService {
                 .toList();
     }
 
-    public LeadResponseDTO listarLeadsPorIdPorFuncionario(Long idFunc, Long idLead) {
-        return LeadResponseDTO.fromEntity(leadRepository.findByResponsavelIdAndId(idFunc, idLead).orElseThrow(() -> new BusinessException("Lead não encontrado.")));
+    public LeadResponseDTO buscarLeadPorIdPorFuncionario(Long idFunc, Long idLead) {
+        return LeadResponseDTO.fromEntity(leadRepository.findByResponsavelIdAndId(idFunc, idLead).orElseThrow(() -> new LeadNotFoundException(idLead)));
     }
 }

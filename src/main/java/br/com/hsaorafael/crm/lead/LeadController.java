@@ -42,8 +42,8 @@ public class LeadController {
 
     @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/funcionario/{idFunc}/{idLead}")
-    public ResponseEntity<LeadResponseDTO> buscarLeadsPorIdPorFuncionario(@PathVariable Long idFunc, @PathVariable Long idLead){
-        return ResponseEntity.ok(leadService.listarLeadsPorIdPorFuncionario(idFunc, idLead));
+    public ResponseEntity<LeadResponseDTO> buscarLeadPorIdPorFuncionario(@PathVariable Long idFunc, @PathVariable Long idLead){
+        return ResponseEntity.ok(leadService.buscarLeadPorIdPorFuncionario(idFunc, idLead));
     }
 
     @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")

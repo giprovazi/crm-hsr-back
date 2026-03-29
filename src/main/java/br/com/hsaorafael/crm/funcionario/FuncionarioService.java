@@ -2,6 +2,7 @@ package br.com.hsaorafael.crm.funcionario;
 
 import br.com.hsaorafael.crm.common.enums.Setor;
 import br.com.hsaorafael.crm.common.exceptions.BusinessException;
+import br.com.hsaorafael.crm.common.exceptions.FuncionarioNotFoundException;
 import br.com.hsaorafael.crm.common.utils.PasswordGenerator;
 import br.com.hsaorafael.crm.funcionario.dto.FuncionarioCreateRequestDTO;
 import br.com.hsaorafael.crm.funcionario.dto.FuncionarioResponseDTO;
@@ -32,7 +33,7 @@ public class FuncionarioService {
 
     public FuncionarioResponseDTO cadastroFuncionario(FuncionarioCreateRequestDTO funcionario) {
         if (funcionarioRepository.existsByEmail(funcionario.email())){
-            throw new BusinessException("Email já cadastrado.");
+            throw new BusinessException("Já existe um funcionário com esse email.");
         }
 
         String senhaTemporaria = PasswordGenerator.gerarSenha();
@@ -63,13 +64,13 @@ public class FuncionarioService {
     }
 
     public FuncionarioResponseDTO buscarPorId(Long id) {
-        Funcionario funcionario = funcionarioRepository.findById(id).orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+        Funcionario funcionario = funcionarioRepository.findById(id).orElseThrow(() -> new FuncionarioNotFoundException(id));
         return dtoConverte(funcionario);
     }
 
     public void desativarFuncionario(Long id) {
         Funcionario funcionario = funcionarioRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+                .orElseThrow(() -> new FuncionarioNotFoundException(id));
 
         if (!funcionario.getAtivo()){
             throw new BusinessException("Funcionário já está desativado.");
@@ -82,7 +83,7 @@ public class FuncionarioService {
 
     public void ativarFuncionario(Long id) {
         Funcionario funcionario = funcionarioRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Funcionário não encontrado."));
+                .orElseThrow(() -> new FuncionarioNotFoundException(id));
 
         if (funcionario.getAtivo()){
             throw new BusinessException("Funcionário já está ativado.");
