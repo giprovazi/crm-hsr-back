@@ -26,7 +26,7 @@ public class Application {
     public CommandLineRunner teste(LeadService leadService, FuncionarioService funcionarioService) {
         return args -> {
 
-            System.out.println("Iniciando testes...");
+            System.out.println("Iniciando testes");
 
 
             try {
