@@ -1,4 +1,6 @@
 package br.com.hsaorafael.crm.registroContato;
 
-public interface RegistroContatoRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RegistroContatoRepository extends JpaRepository<RegistroContato,Long > {
 }

@@ -12,11 +12,13 @@
 <div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <h1>Leads</h1>
 
         <a href="/dashboard" class="btn btn-secondary">
             Voltar Dashboard
         </a>
+
     </div>
 
     <div class="card shadow-sm">
@@ -26,6 +28,7 @@
             <table class="table table-hover align-middle">
 
                 <thead class="table-dark">
+
                 <tr>
                     <th>ID</th>
                     <th>Nome</th>
@@ -35,6 +38,7 @@
                     <th>Responsável</th>
                     <th>Procedimento</th>
                 </tr>
+
                 </thead>
 
                 <tbody>
@@ -55,7 +59,7 @@
                         </span>
                     </td>
 
-                    <td th:text="${lead.nomeResponsavel} ?: 'Sem responsável'"></td>
+                    <td th:text="${lead.responsavelNome} ?: 'Sem responsável'"></td>
 
                     <td th:text="${lead.procedimentoInteresse}"></td>
 
@@ -69,32 +73,60 @@
 
     </div>
 
-    <div class="card shadow-sm mt-4">
+    <div class="card shadow-sm mt-4 mb-4">
 
         <div class="card-body">
 
-            <h4 class="mb-3">Endpoints da API</h4>
+            <h4 class="mb-3">Rotas da API</h4>
 
             <ul class="list-group">
 
                 <li class="list-group-item">
-                    GET /api/leads
+                    <strong>POST</strong> /api/leads
                 </li>
 
                 <li class="list-group-item">
-                    GET /api/leads/{id}
+                    <strong>GET</strong> /api/leads
                 </li>
 
                 <li class="list-group-item">
-                    POST /api/leads
+                    <strong>GET</strong> /api/leads/funcionario/{id}
                 </li>
 
                 <li class="list-group-item">
-                    PATCH /api/leads/{id}/contato
+                    <strong>GET</strong> /api/leads/funcionario/{idFunc}/{idLead}
                 </li>
 
                 <li class="list-group-item">
-                    PATCH /api/leads/{id}/desativar
+                    <strong>GET</strong> /api/leads/{id}
+                </li>
+
+                <li class="list-group-item">
+                    <strong>PATCH</strong> /api/leads/{id}/assumir
+                </li>
+
+                <li class="list-group-item">
+                    <strong>PUT</strong> /api/leads/{id}
+                </li>
+
+                <li class="list-group-item">
+                    <strong>PATCH</strong> /api/leads/{id}/contato
+                </li>
+
+                <li class="list-group-item">
+                    <strong>PATCH</strong> /api/leads/{id}/encaminhar
+                </li>
+
+                <li class="list-group-item">
+                    <strong>GET</strong> /api/leads/hoje
+                </li>
+
+                <li class="list-group-item">
+                    <strong>GET</strong> /api/leads/ativos/count
+                </li>
+
+                <li class="list-group-item">
+                    <strong>PATCH</strong> /api/leads/{id}/desativar
                 </li>
 
             </ul>

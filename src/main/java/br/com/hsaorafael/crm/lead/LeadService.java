@@ -39,6 +39,7 @@ public class LeadService {
         lead.setProcedimentoInteresse(leadRequestDTO.procedimentoInteresse());
         lead.setOrigem(leadRequestDTO.origem());
         lead.setObservacoes(leadRequestDTO.observacoes());
+        lead.setPreferenciaMedico(leadRequestDTO.preferenciaMedico());
 
         lead.setStatus(LeadStatus.NOVO);
         lead.setDataCriacao(LocalDateTime.now());

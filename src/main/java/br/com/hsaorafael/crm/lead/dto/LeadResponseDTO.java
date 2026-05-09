@@ -18,7 +18,8 @@ public record LeadResponseDTO(
         LocalDateTime dataCriacao,
         LocalDateTime dataUltimoContato,
         String observacoes,
-        Boolean ativo
+        Boolean ativo,
+        String preferenciaMedico
 ) {
     public static LeadResponseDTO fromEntity(Lead lead) {
         return new LeadResponseDTO(
@@ -33,7 +34,8 @@ public record LeadResponseDTO(
                 lead.getDataCriacao(),
                 lead.getDataUltimoContato(),
                 lead.getObservacoes(),
-                lead.getAtivo()
+                lead.getAtivo(),
+                lead.getPreferenciaMedico()
         );
     }
 }

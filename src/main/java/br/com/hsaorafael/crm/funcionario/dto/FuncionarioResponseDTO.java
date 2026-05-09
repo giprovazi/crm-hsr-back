@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 public record FuncionarioResponseDTO(Long id, String nome, String email, LocalDateTime dataCriacao, Setor setor, Boolean ativo) {
     public static FuncionarioResponseDTO fromEntity(Funcionario f) {
+        
         return new FuncionarioResponseDTO(
                 f.getId(),
                 f.getNome(),

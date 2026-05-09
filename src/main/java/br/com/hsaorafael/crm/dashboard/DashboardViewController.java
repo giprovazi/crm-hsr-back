@@ -1,4 +1,4 @@
-package br.com.hsaorafael.crm.view;
+package br.com.hsaorafael.crm.dashboard;
 
 import br.com.hsaorafael.crm.lead.LeadService;
 import org.springframework.stereotype.Controller;

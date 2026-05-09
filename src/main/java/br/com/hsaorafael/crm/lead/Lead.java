@@ -33,7 +33,7 @@ public class Lead {
     @Column(nullable = false)
     private LeadStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsavel_id")
     private Funcionario responsavel;
 
@@ -49,6 +49,9 @@ public class Lead {
 
     @Column(nullable = false)
     private Boolean ativo;
+
+    @Column
+    private String preferenciaMedico;
 
     public Boolean getAtivo() {
         return ativo;
@@ -92,6 +95,14 @@ public class Lead {
 
     public String getNome() {
         return nome;
+    }
+
+    public String getPreferenciaMedico() {
+        return preferenciaMedico;
+    }
+
+    public void setPreferenciaMedico(String preferenciaMedico) {
+        this.preferenciaMedico = preferenciaMedico;
     }
 
     public void setNome(String nome) {
