@@ -40,7 +40,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/leads").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/leads/**").permitAll()
+                        .requestMatchers("/api/leads/historico/**").permitAll()
                         .requestMatchers(
                                 "/dashboard/**",
                                 "/leads",

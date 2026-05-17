@@ -3,9 +3,11 @@ package br.com.hsaorafael.crm.lead;
 import br.com.hsaorafael.crm.common.enums.LeadOrigem;
 import br.com.hsaorafael.crm.common.enums.LeadStatus;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
+import br.com.hsaorafael.crm.historicoLead.HistoricoLead;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "leads")
@@ -28,6 +30,9 @@ public class Lead {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LeadOrigem origem;
+
+    @OneToMany(mappedBy = "lead")
+    private List<HistoricoLead> historicos;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -99,6 +104,14 @@ public class Lead {
 
     public String getPreferenciaMedico() {
         return preferenciaMedico;
+    }
+
+    public List<HistoricoLead> getHistoricos() {
+        return historicos;
+    }
+
+    public void setHistoricos(List<HistoricoLead> historicos) {
+        this.historicos = historicos;
     }
 
     public void setPreferenciaMedico(String preferenciaMedico) {

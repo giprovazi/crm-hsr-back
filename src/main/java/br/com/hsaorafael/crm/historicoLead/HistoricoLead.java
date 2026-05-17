@@ -1,25 +1,21 @@
-package br.com.hsaorafael.crm.registroContato;
+package br.com.hsaorafael.crm.historicoLead;
 
-import br.com.hsaorafael.crm.common.enums.ResultadoContato;
-import br.com.hsaorafael.crm.common.enums.TipoContato;
+import br.com.hsaorafael.crm.common.enums.TipoEvento;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
 import br.com.hsaorafael.crm.lead.Lead;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
-
+@Table(name = "historicoLead")
 @Entity
-@Table(name = "registro_contato")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistroContato {
-
+public class HistoricoLead {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,14 +28,11 @@ public class RegistroContato {
     @JoinColumn(name = "funcionario_id")
     private Funcionario funcionario;
 
-    @Enumerated(EnumType.STRING)
-    private TipoContato tipo;
-
-    @Enumerated(EnumType.STRING)
-    private ResultadoContato resultado;
-
     @Column
-    private String observacao;
+    private TipoEvento tipoEvento;
+
+    @Column(nullable = false)
+    private String descricao;
 
     @Column
     private LocalDateTime dataHora;

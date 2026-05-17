@@ -1,7 +1,12 @@
 package br.com.hsaorafael.crm.registroContato;
 
+import br.com.hsaorafael.crm.common.enums.LeadStatus;
+import br.com.hsaorafael.crm.common.enums.TipoEvento;
 import br.com.hsaorafael.crm.common.exceptions.LeadNotFoundException;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
+import br.com.hsaorafael.crm.historicoLead.HistoricoLead;
+import br.com.hsaorafael.crm.historicoLead.HistoricoLeadService;
+import br.com.hsaorafael.crm.historicoLead.dto.HistoricoLeadCreateDTO;
 import br.com.hsaorafael.crm.lead.Lead;
 import br.com.hsaorafael.crm.lead.LeadRepository;
 import br.com.hsaorafael.crm.registroContato.dto.RegistroContatoCreateDTO;
@@ -17,10 +22,12 @@ import java.util.List;
 public class RegistroContatoService {
     private final RegistroContatoRepository registroContatoRepository;
     private final LeadRepository leadRepository;
+    private final HistoricoLeadService historicoLeadService;
 
-    public RegistroContatoService(RegistroContatoRepository registroContatoRepository, LeadRepository leadRepository){
+    public RegistroContatoService(RegistroContatoRepository registroContatoRepository, LeadRepository leadRepository, HistoricoLeadService historicoLeadService){
         this.registroContatoRepository = registroContatoRepository;
         this.leadRepository = leadRepository;
+        this.historicoLeadService = historicoLeadService;
     }
 
     public void registrarContato(RegistroContatoCreateDTO registroContatoDTO){
@@ -37,6 +44,9 @@ public class RegistroContatoService {
         registroContato.setResultado(registroContatoDTO.resultadoContato());
         registroContato.setObservacao(registroContatoDTO.observacao());
         registroContato.setDataHora(LocalDateTime.now());
+        lead.setStatus(LeadStatus.EM_ATENDIMENTO);
+
+        historicoLeadService.registrarHistorico(new HistoricoLeadCreateDTO(lead.getId(), TipoEvento.CONTATO, registroContato.getObservacao()));
 
         registroContatoRepository.save(registroContato);
     }
