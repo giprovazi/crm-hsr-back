@@ -48,7 +48,7 @@ public class SecurityConfig {
                                 "/funcionarios",
                                 "/contatos"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
