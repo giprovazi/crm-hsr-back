@@ -1,5 +1,6 @@
 package br.com.hsaorafael.crm.historicoLead;
 
+import br.com.hsaorafael.crm.agendamento.dto.AgendamentoResponseDTO;
 import br.com.hsaorafael.crm.common.enums.TipoEvento;
 import br.com.hsaorafael.crm.common.exceptions.LeadNotFoundException;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
@@ -8,6 +9,7 @@ import br.com.hsaorafael.crm.historicoLead.dto.HistoricoLeadResponseDTO;
 import br.com.hsaorafael.crm.lead.Lead;
 import br.com.hsaorafael.crm.lead.LeadRepository;
 import br.com.hsaorafael.crm.registroContato.dto.RegistroContatoResponseDTO;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -58,5 +60,15 @@ public class HistoricoLeadService {
         return historicoLeads.stream()
                 .map(HistoricoLeadResponseDTO::fromEntity)
                 .toList();
+    }
+
+    public List<HistoricoLeadResponseDTO> obterHistoricoPorFuncionario() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        return historicoLeadRepository.findByFuncionarioId(funcionario.getId()).stream().map(HistoricoLeadResponseDTO::fromEntity).toList();
     }
 }

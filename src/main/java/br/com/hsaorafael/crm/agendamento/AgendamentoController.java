@@ -1,5 +1,6 @@
 package br.com.hsaorafael.crm.agendamento;
 
+import br.com.hsaorafael.crm.agendamento.dto.AgendaDashboardDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoCreateDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoResponseDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoUpdateDTO;
@@ -48,5 +49,15 @@ public class AgendamentoController {
     @PatchMapping("/{id}/cancelar")
     public void cancelar(@PathVariable Long id) {
         agendamentoService.cancelar(id);
+    }
+
+    @GetMapping("/funcionario/filtro/{status}")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listar(@PathVariable String status) {
+        return ResponseEntity.ok(agendamentoService.listarPorFuncionario(status));
+    }
+
+    @GetMapping("/funcionario/dashboard")
+    public ResponseEntity<AgendaDashboardDTO> dashboard() {
+        return ResponseEntity.ok(agendamentoService.dashboard());
     }
 }

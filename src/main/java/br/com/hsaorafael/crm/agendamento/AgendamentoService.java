@@ -1,5 +1,6 @@
 package br.com.hsaorafael.crm.agendamento;
 
+import br.com.hsaorafael.crm.agendamento.dto.AgendaDashboardDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoCreateDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoResponseDTO;
 import br.com.hsaorafael.crm.agendamento.dto.AgendamentoUpdateDTO;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -135,5 +137,88 @@ public class AgendamentoService {
         agendamento.setStatus(Status.CANCELADO);
 
         agendamentoRepository.save(agendamento);
+    }
+
+    public List<AgendamentoResponseDTO> listarPorFuncionario(String filtro) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        List<Agendamento> agendamentos;
+
+        if (filtro == null || filtro.equals("todas")) {
+
+            agendamentos =
+                    agendamentoRepository.findByFuncionarioId(funcionario.getId());
+
+        } else if (filtro.equals("hoje")) {
+
+            agendamentos =
+                    agendamentoRepository.findByFuncionarioIdAndDiaAgendamento(
+                            funcionario.getId(),
+                            LocalDate.now()
+                    );
+
+        } else if (filtro.equals("proximos")) {
+
+            agendamentos =
+                    agendamentoRepository
+                            .findByFuncionarioIdAndDiaAgendamentoAfter(
+                                    funcionario.getId(),
+                                    LocalDate.now()
+                            );
+
+        } else if (filtro.equals("finalizados")) {
+
+            agendamentos =
+                    agendamentoRepository
+                            .findByFuncionarioIdAndStatus(
+                                    funcionario.getId(),
+                                    Status.FINALIZADO
+                            );
+
+        } else {
+
+            agendamentos = List.of();
+        }
+
+        return agendamentos.stream()
+                .map(AgendamentoResponseDTO::fromEntity)
+                .toList();
+    }
+
+    public AgendaDashboardDTO dashboard() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        List<Agendamento> agendamentos =
+                agendamentoRepository.findByFuncionarioId(funcionario.getId());
+
+        LocalDate hoje = LocalDate.now();
+
+        int hojeCount = (int) agendamentos.stream()
+                .filter(a -> a.getDiaAgendamento().equals(hoje))
+                .count();
+
+        int proximosCount = (int) agendamentos.stream()
+                .filter(a -> a.getDiaAgendamento().isAfter(hoje))
+                .count();
+
+        int finalizadosCount = (int) agendamentos.stream()
+                .filter(a -> a.getStatus() == Status.FINALIZADO)
+                .count();
+
+        return new AgendaDashboardDTO(
+                hojeCount,
+                proximosCount,
+                finalizadosCount
+        );
     }
 }

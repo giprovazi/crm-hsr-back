@@ -27,8 +27,8 @@ public class Lead {
     @Column(nullable = false)
     private String procedimentoInteresse;
 
+    @Column(nullable = true)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private LeadOrigem origem;
 
     @OneToMany(mappedBy = "lead")

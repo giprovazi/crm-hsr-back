@@ -1,10 +1,13 @@
 package br.com.hsaorafael.crm.lead;
 
 import br.com.hsaorafael.crm.common.enums.LeadStatus;
+import br.com.hsaorafael.crm.common.enums.TipoEvento;
 import br.com.hsaorafael.crm.common.exceptions.BusinessException;
 import br.com.hsaorafael.crm.common.exceptions.LeadNotFoundException;
 import br.com.hsaorafael.crm.distribuicaoLeads.DistribuicaoLeadsService;
 import br.com.hsaorafael.crm.funcionario.Funcionario;
+import br.com.hsaorafael.crm.historicoLead.HistoricoLeadService;
+import br.com.hsaorafael.crm.historicoLead.dto.HistoricoLeadCreateDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadContactRequestDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadCreateRequestDTO;
 import br.com.hsaorafael.crm.lead.dto.LeadUpdateRequestDTO;
@@ -23,10 +26,12 @@ import java.util.Optional;
 public class LeadService {
     private final LeadRepository leadRepository;
     private final DistribuicaoLeadsService distribuicaoLeadService;
+    private final HistoricoLeadService historicoLeadService;
 
-    public LeadService(LeadRepository leadRepository, DistribuicaoLeadsService distribuicaoLeadService) {
+    public LeadService(LeadRepository leadRepository, DistribuicaoLeadsService distribuicaoLeadService, HistoricoLeadService historicoLeadService) {
         this.leadRepository = leadRepository;
         this.distribuicaoLeadService = distribuicaoLeadService;
+        this.historicoLeadService = historicoLeadService;
     }
 
 
@@ -109,8 +114,8 @@ public class LeadService {
     public void encaminharLead(Long id){
         Lead lead = leadRepository.findById(id).orElseThrow(()-> new LeadNotFoundException(id));
         lead.setStatus(LeadStatus.ENCAMINHADO_VENDAS);
-        lead.setResponsavel(null);
         lead.setDataUltimoContato(LocalDateTime.now());
+        historicoLeadService.registrarHistorico(new HistoricoLeadCreateDTO(lead.getId(), TipoEvento.ENCAMINHADO, lead.getObservacoes()));
         leadRepository.save(lead);
     }
 

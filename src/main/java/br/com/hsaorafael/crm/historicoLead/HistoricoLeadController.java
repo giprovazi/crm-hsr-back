@@ -27,7 +27,10 @@ public class HistoricoLeadController {
     @GetMapping("/{leadId}")
     public ResponseEntity<List<HistoricoLeadResponseDTO>> obterHistoricoPorLead(@PathVariable Long leadId){
         return ResponseEntity.ok(historicoLeadService.obterHistoricoPorLead(leadId));
+    }
 
-
+    @GetMapping("/funcionario")
+    public ResponseEntity<List<HistoricoLeadResponseDTO>> obterHistoricoPorFuncionario(){
+        return ResponseEntity.ok(historicoLeadService.obterHistoricoPorFuncionario());
     }
 }
