@@ -21,7 +21,7 @@ public class DashboardViewController {
 
         model.addAttribute(
                 "leadsHoje",
-                leadService.listarLeadsCriadosHoje().size()
+                leadService.listarLeadsCriadosHojePorFuncionario().size()
         );
 
         return "dashboard";

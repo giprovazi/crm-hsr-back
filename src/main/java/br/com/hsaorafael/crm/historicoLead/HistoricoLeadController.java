@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/leads/historico")
 public class HistoricoLeadController {
     private final HistoricoLeadService historicoLeadService;

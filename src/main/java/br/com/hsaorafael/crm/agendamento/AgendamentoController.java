@@ -1,0 +1,52 @@
+package br.com.hsaorafael.crm.agendamento;
+
+import br.com.hsaorafael.crm.agendamento.dto.AgendamentoCreateDTO;
+import br.com.hsaorafael.crm.agendamento.dto.AgendamentoResponseDTO;
+import br.com.hsaorafael.crm.agendamento.dto.AgendamentoUpdateDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/agendamento")
+public class AgendamentoController {
+    private final AgendamentoService agendamentoService;
+
+    public AgendamentoController(AgendamentoService agendamentoService) {
+        this.agendamentoService = agendamentoService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> marcarAgendamento(@RequestBody AgendamentoCreateDTO agendamentoCreateDTO){
+        agendamentoService.marcarAgendamento(agendamentoCreateDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/funcionario")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarAgendamentosPorFuncionario(){
+        return ResponseEntity.ok(agendamentoService.listarAgendamentosPorFuncionario());
+    }
+
+    @GetMapping("/funcionario/proximos")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarProximosAgendamentos() {
+        return ResponseEntity.ok(agendamentoService.listarProximosAgendamentosPorFuncionario());
+    }
+
+    @GetMapping("/funcionario/{id}")
+    public ResponseEntity<AgendamentoResponseDTO> buscarAgendamentoPorId(@PathVariable Long id){
+        return ResponseEntity.ok(agendamentoService.buscarAgendamentoPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AgendamentoResponseDTO> atualizar(@PathVariable Long id, @RequestBody AgendamentoUpdateDTO dto) {
+        return ResponseEntity.ok(agendamentoService.atualizar(id, dto));
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public void cancelar(@PathVariable Long id) {
+        agendamentoService.cancelar(id);
+    }
+}

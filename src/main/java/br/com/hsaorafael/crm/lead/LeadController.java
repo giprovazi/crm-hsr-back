@@ -41,6 +41,12 @@ public class LeadController {
     }
 
     @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
+    @GetMapping("/funcionario")
+    public ResponseEntity<List<LeadResponseDTO>> listarTodosLeadsPorFuncionarioSemId(){
+        return ResponseEntity.ok(leadService.listarTodosLeadsPorFuncionarioSemId());
+    }
+
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/funcionario/{idFunc}/{idLead}")
     public ResponseEntity<LeadResponseDTO> buscarLeadPorIdPorFuncionario(@PathVariable Long idFunc, @PathVariable Long idLead){
         return ResponseEntity.ok(leadService.buscarLeadPorIdPorFuncionario(idFunc, idLead));
@@ -81,8 +87,14 @@ public class LeadController {
 
     @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
     @GetMapping("/hoje")
-    public ResponseEntity<List<LeadResponseDTO>> listarLeadsCriadosHoje(){
-        return ResponseEntity.ok(leadService.listarLeadsCriadosHoje());
+    public ResponseEntity<List<LeadResponseDTO>> listarLeadsCriadosHojePorFuncionario(){
+        return ResponseEntity.ok(leadService.listarLeadsCriadosHojePorFuncionario());
+    }
+
+    @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")
+    @GetMapping("/hoje/count")
+    public ResponseEntity<Long> contarLeadsCriadosHojePorFuncionario(){
+        return ResponseEntity.ok(leadService.contarLeadsCriadosHojePorFuncionario());
     }
 
     @PreAuthorize("hasAnyRole('CALL_CENTER', 'ADMIN')")

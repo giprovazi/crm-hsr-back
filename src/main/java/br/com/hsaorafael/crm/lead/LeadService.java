@@ -114,20 +114,53 @@ public class LeadService {
         leadRepository.save(lead);
     }
 
-    public List<LeadResponseDTO> listarLeadsCriadosHoje(){
+    public List<LeadResponseDTO> listarLeadsCriadosHojePorFuncionario(){
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+
         LocalDate hoje = LocalDate.now();
         LocalDateTime inicio = hoje.atStartOfDay();
         LocalDateTime fim = hoje.atTime(23, 59, 59);
 
-        List<Lead> leads = leadRepository.findByDataCriacaoBetween(inicio,fim);
+        List<Lead> leads = leadRepository.findByResponsavelIdAndDataCriacaoBetween(funcionario.getId(),inicio,fim);
 
         return leads.stream()
                 .map(LeadResponseDTO::fromEntity)
                 .toList();
     }
 
+    public Long contarLeadsCriadosHojePorFuncionario(){
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        LocalDate hoje = LocalDate.now();
+
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.atTime(23, 59, 59);
+
+        return leadRepository.countByResponsavelIdAndDataCriacaoBetween(
+                funcionario.getId(),
+                inicio,
+                fim
+        );
+    }
+
     public Integer contarLeadsAtivos(){
-        return leadRepository.countByAtivoTrue();
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        return leadRepository.countByResponsavelIdAndAtivoTrue(funcionario.getId());
     }
 
     public void desativarLead(Long id){
@@ -141,6 +174,19 @@ public class LeadService {
 
     public List<LeadResponseDTO> listarTodosLeadsPorFuncionario(Long id) {
         return leadRepository.findByResponsavelId(id)
+                .stream()
+                .map(LeadResponseDTO::fromEntity)
+                .toList();
+    }
+
+    public List<LeadResponseDTO> listarTodosLeadsPorFuncionarioSemId() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Funcionario funcionario =
+                (Funcionario) authentication.getPrincipal();
+
+        return leadRepository.findByResponsavelId(funcionario.getId())
                 .stream()
                 .map(LeadResponseDTO::fromEntity)
                 .toList();

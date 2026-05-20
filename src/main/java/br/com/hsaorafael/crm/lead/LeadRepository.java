@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LeadRepository extends JpaRepository<Lead, Long> {
-    List<Lead> findByDataCriacaoBetween(LocalDateTime inicio, LocalDateTime fim);
+    List<Lead> findByResponsavelIdAndDataCriacaoBetween(Long funcionarioId, LocalDateTime inicio, LocalDateTime fim);
+
+    Long countByResponsavelIdAndDataCriacaoBetween(Long funcionarioId, LocalDateTime inicio, LocalDateTime fim);
 
     List<Lead> findByAtivoTrue();
 
@@ -16,5 +18,5 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
 
     Optional<Lead> findByResponsavelIdAndId(Long idFunc, Long idLead);
 
-    Integer countByAtivoTrue();
+    Integer countByResponsavelIdAndAtivoTrue(Long funcionarioId);
 }
